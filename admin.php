@@ -24,61 +24,61 @@ $miniAppInstructionText = <<<HTML
 
 مراحل بالا را طی کنید سپس آدرس زیر را ارسال نمایید :
 
-<code>https://{$domainhostsEscaped}/app/</code>
+<code>{$domainhostsEscaped}/app/</code>
 
 ➖➖➖➖➖➖➖➖➖➖➖➖
 ⚙️ تنظیم کرون‌جاب‌ها در هاست
 
 <b>🕒 بررسی وضعیت روزانه — هر 15 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/statusday.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/statusday.php</code>
 
 <b>🔔 سرویس اعلان‌ها (Notification Service) — هر 1 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/NoticationsService.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/NoticationsService.php</code>
 
 <b>💳 بررسی انقضای پرداخت‌ها — هر 5 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/payment_expire.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/payment_expire.php</code>
 
 <b>📩 ارسال پیام‌ها — هر 1 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/sendmessage.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/sendmessage.php</code>
 
 <b>💰 پردازش پرداخت‌های Plisio — هر 3 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/plisio.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/plisio.php</code>
 
 <b>⚙️ فعال‌سازی تنظیمات جدید — هر 1 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/activeconfig.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/activeconfig.php</code>
 
 <b>🚫 غیرفعال‌سازی تنظیمات قدیمی — هر 1 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/disableconfig.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/disableconfig.php</code>
 
 <b>🇮🇷 بررسی وضعیت پرداخت ایران‌پی — هر 1 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/iranpay1.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/iranpay1.php</code>
 
 <b>🗄 تهیه نسخه‌ی پشتیبان (Backup) — هر 5 ساعت</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/backupbot.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/backupbot.php</code>
 
 <b>🎁 ارسال هدایا (Gift System) — هر 2 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/gift.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/gift.php</code>
 
 <b>👥 بررسی انقضای نمایندگان — هر 30 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/expireagent.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/expireagent.php</code>
 
 <b>⏸ بررسی وضعیت سفارش‌های معلق — هر 15 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/on_hold.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/on_hold.php</code>
 
 <b>🧪 تست تنظیمات سیستم — هر 2 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/configtest.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/configtest.php</code>
 
 <b>🌐 بررسی Uptime نودها — هر 15 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/uptime_node.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/uptime_node.php</code>
 
 <b>🖥 بررسی Uptime پنل‌ها — هر 15 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/uptime_panel.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/uptime_panel.php</code>
 
 <b>💳 انجام تراکنش‌های کارت‌به‌کارت — هر 1 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/croncard.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/croncard.php</code>
 
 <b>💳 انجام قرعه کشی شبانه — هر 1 دقیقه</b>
-<code>curl https://{$domainhostsEscaped}/cronbot/lottery.php</code>
+<code>curl {$domainhostsEscaped}/cronbot/lottery.php</code>
 HTML;
 
 if (in_array($text, $textadmin) || $datain == "admin") {
@@ -7025,7 +7025,7 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
     sendmessage($from_id, "✅  پنل تحت وب شما با موفقیت فعال گردید.
 
 
-🔗آدرس ورود : https://$domainhosts/panel
+🔗آدرس ورود : $domainhosts/panel
 👤نام کاربری :  <code>$from_id</code>
 🔑رمز عبور :  <code>$randomString</code>", $keyboardstatistics, 'HTML');
 } elseif (preg_match('/addordermanualـ(\w+)/', $datain, $dataget)) {
