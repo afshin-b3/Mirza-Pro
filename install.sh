@@ -405,7 +405,11 @@ configure_backup_schedule() {
     echo " 7. Disable for ${backup_type^^}"
     read -p "Enter your choice [1-7]: " cron_choice
 
-    (crontab -l 2>/dev/null | grep -v "$cron_job_name") | crontab -
+    local TEMP_CRON
+    TEMP_CRON=$(mktemp)
+
+    crontab -l 2>/dev/null | grep -v "$cron_job_name" | sed '$a\' > "$TEMP_CRON"
+
     CRON_COMMAND="$SCRIPT_PATH $cron_job_name >/dev/null 2>&1"
     CRON_SCHEDULE=""
     MSG=""
@@ -418,15 +422,38 @@ configure_backup_schedule() {
         5) CRON_SCHEDULE="0 3 * * 0"; MSG="Weekly" ;;
         6) 
             read -p "Enter interval in minutes: " INTERVAL
-            if [[ ! $INTERVAL =~ ^[0-9]+$ ]] || [[ $INTERVAL -eq 0 ]]; then echo -e "${RED}Invalid.${NC}"; return; fi
+            if [[ ! $INTERVAL =~ ^[0-9]+$ ]] || [[ $INTERVAL -eq 0 ]]; then 
+                rm "$TEMP_CRON"
+                echo -e "${RED}Invalid interval.${NC}"; 
+                return; 
+            fi
             CRON_SCHEDULE="*/$INTERVAL * * * *"; MSG="Every $INTERVAL minutes"
             ;;
-        7) echo -e "${YELLOW}Automatic ${backup_type^^} backups disabled.${NC}"; return ;;
-        *) echo -e "${RED}Invalid option.${NC}"; return ;;
+        7) 
+            if [ -s "$TEMP_CRON" ]; then
+                crontab "$TEMP_CRON"
+            else
+                crontab -r 2>/dev/null
+            fi
+            rm "$TEMP_CRON"
+            echo -e "${YELLOW}Automatic ${backup_type^^} backups disabled.${NC}"; 
+            return 
+            ;;
+        *) 
+            rm "$TEMP_CRON"
+            echo -e "${RED}Invalid option.${NC}"; 
+            return 
+            ;;
     esac
 
-    (crontab -l 2>/dev/null; echo "$CRON_SCHEDULE $CRON_COMMAND") | crontab -
+    if [ -n "$CRON_SCHEDULE" ]; then
+        echo "$CRON_SCHEDULE $CRON_COMMAND" >> "$TEMP_CRON"
+        sed -i '$a\' "$TEMP_CRON" 
+        crontab "$TEMP_CRON"
     echo -e "${GREEN}Automatic ${backup_type^^} backup schedule set: $MSG${NC}"
+    fi
+
+    rm -f "$TEMP_CRON"
 }
 
 backup_menu() {
