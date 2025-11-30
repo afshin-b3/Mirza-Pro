@@ -5,6 +5,28 @@ session_regenerate_id(true);
 require_once '../config.php';
 require_once '../function.php';
 require_once '../botapi.php';
+
+$pepper = defined('APP_PEPPER') ? APP_PEPPER : '';
+
+function hashAdminPassword($password, $pepper)
+{
+    $algo = defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_BCRYPT;
+    return password_hash($password . $pepper, $algo);
+}
+
+function verifyAdminPassword($password, $pepper, $storedHash)
+{
+    if (password_verify($password . $pepper, $storedHash)) {
+        return true;
+    }
+
+    if ($password === $storedHash) {
+        return 'rehash';
+    }
+
+    return false;
+}
+
 $allowed_ips = select("setting","*",null,null,"select");
 
 $user_ip = $_SERVER['REMOTE_ADDR'];
@@ -12,27 +34,49 @@ $admin_ids = select("admin", "id_admin",null,null,"FETCH_COLUMN");
 $check_ip = $allowed_ips['iplogin'] == $user_ip ? true:false;
 $texterrr = "";
 $_SESSION["user"] = null;
-if (isset($_POST['login'])) {
-    $username = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8');
-    $password = htmlspecialchars($_POST['password'], ENT_QUOTES, 'UTF-8');
-    $query = $pdo->prepare("SELECT * FROM admin WHERE username=:username");
-    $query->bindParam("username", $username, PDO::PARAM_STR);
-    $query->execute();
-    $result = $query->fetch(PDO::FETCH_ASSOC);
 
-    if ( !$result ) {
-        $texterrr = 'نام کاربری یا رمزعبور وارد شده اشتباه است!';
+if (isset($_POST['login'])) {
+    $now = time();
+    if (!isset($_SESSION['login_attempts']) || !is_array($_SESSION['login_attempts'])) {
+        $_SESSION['login_attempts'] = ['count' => 0, 'first' => $now];
+    }
+    if (($now - $_SESSION['login_attempts']['first']) > 300) {
+        $_SESSION['login_attempts'] = ['count' => 0, 'first' => $now];
+    }
+    if ($_SESSION['login_attempts']['count'] >= 5) {
+        $texterrr = 'تعداد تلاش‌های ورود زیاد شد؛ لطفاً چند دقیقه بعد دوباره امتحان کنید.';
     } else {
-                       
-        if ( $password == $result["password"]) {
-            foreach ($admin_ids as $admin) {
-                $texts = "کاربر با نام کاربری $username وارد پنل تحت وب شد";
-        sendmessage($admin, $texts, null, 'html');
-            }
-            $_SESSION["user"] = $result["username"];
-            header('Location: index.php');
+        $username = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8');
+        $password = htmlspecialchars($_POST['password'], ENT_QUOTES, 'UTF-8');
+        $query = $pdo->prepare("SELECT * FROM admin WHERE username=:username");
+        $query->bindParam("username", $username, PDO::PARAM_STR);
+        $query->execute();
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+
+        if (!$result) {
+            $texterrr = 'نام کاربری وارد شده اشتباه است!';
+            $_SESSION['login_attempts']['count']++;
         } else {
-            $texterrr =  'رمز صحیح نمی باشد';
+            $verifyStatus = verifyAdminPassword($password, $pepper, $result["password"]);
+            if ($verifyStatus === true || $verifyStatus === 'rehash') {
+                if ($verifyStatus === 'rehash' || password_needs_rehash($result["password"], defined('PASSWORD_ARGON2ID') ? PASSWORD_ARGON2ID : PASSWORD_BCRYPT)) {
+                    $hashedPassword = hashAdminPassword($password, $pepper);
+                    $updateStmt = $pdo->prepare("UPDATE admin SET password = :password WHERE username = :username");
+                    $updateStmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
+                    $updateStmt->bindParam(':username', $username, PDO::PARAM_STR);
+                    $updateStmt->execute();
+                }
+                foreach ($admin_ids as $admin) {
+                    $texts = "ورود جدید به پنل تحت وب: کاربر با نام کاربری {$username} وارد شد";
+                    sendmessage($admin, $texts, null, 'html');
+                }
+                $_SESSION["user"] = $result["username"];
+                $_SESSION['login_attempts'] = ['count' => 0, 'first' => $now];
+                header('Location: index.php');
+            } else {
+                $texterrr =  'رمز عبور اشتباه است.';
+                $_SESSION['login_attempts']['count']++;
+            }
         }
     }
 }
@@ -76,19 +120,19 @@ if (isset($_POST['login'])) {
                 </svg>
             </div>
             
-            <h1>دسترسی محدود شده</h1>
-            <p>جهت استفاده از پنل تحت وب باید از داخل ربات زیر پیام اطلاعات ورود دکمه تنظیم آیپی ورود را زده و آیپی زیر را در آنجا ارسال کنید تا بتوانید استفاده نمایید.</p>
+            <h1>دسترسی از این IP مجاز نیست</h1>
+            <p>آی‌پی شما برای ورود به این پنل مجاز نیست. لطفاً با مدیر سیستم برای اضافه کردن آی‌پی هماهنگ کنید یا مقدار iplogin را به‌روز کنید.</p>
             
             <div class="ip-address" id="user-ip"><?php echo $user_ip; ?></div>
         </div>
         <?php } ?>
         <?php if($check_ip){?>
       <form method="post" class="form-signin" action="/panel/login.php">
-        <h2 class="form-signin-heading">پنل مدیریت ربات میرزا</h2>
+        <h2 class="form-signin-heading">ورود به پنل مدیریت</h2>
         <div class="login-wrap">
             <p><?php echo $texterrr; ?></p>
             <input type="text" name ="username" class="form-control" placeholder="نام کاربری" autofocus>
-            <input type="password" name = "password" class="form-control" placeholder="کلمه عبور">
+            <input type="password" name = "password" class="form-control" placeholder="رمز عبور">
             <button class="btn btn-lg btn-login btn-block"  name="login" type="submit">ورود</button>
         </div>
 
