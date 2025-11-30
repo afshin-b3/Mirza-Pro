@@ -61,8 +61,33 @@ if (!is_array($data)) {
 }
 
 $data = sanitize_recursive($data);
-$tokencheck = explode('Bearer ', $headers['Authorization'])[1];
+$authHeader = $headers['Authorization'] ?? '';
+if (!is_string($authHeader) || stripos($authHeader, 'Bearer ') !== 0) {
+    echo json_encode([
+        'status' => false,
+        'msg' => "Token invalid",
+    ]);
+    http_response_code(403);
+    return;
+}
+$tokencheck = trim(substr($authHeader, 7));
+if ($tokencheck === '') {
+    echo json_encode([
+        'status' => false,
+        'msg' => "Token invalid",
+    ]);
+    http_response_code(403);
+    return;
+}
 $usercheck = select('user', "*", "id", $data['user_id'], "select");
+if (!$usercheck) {
+    echo json_encode([
+        'status' => false,
+        'msg' => "Token invalid",
+    ]);
+    http_response_code(403);
+    return;
+}
 if ($usercheck['User_Status'] == "block") {
     echo json_encode([
         'status' => false,
@@ -97,12 +122,21 @@ switch ($data['actions']) {
         $user_id =  $data['user_id'];
         $username = $data['q'];
         $offset = ($page - 1) * $limit;
+        $querywhere = "";
+        $params = [
+            ':user_id' => $user_id,
+            ':limit' => $limit,
+            ':offset' => $offset
+        ];
         if ($username != null) {
-            $querywhere = " AND username LIKE '%$username%'";
-        } else {
-            $querywhere = "";
+            $querywhere = " AND username LIKE :username_like";
+            $params[':username_like'] = "%{$username}%";
         }
-        $countStmt = $pdo->prepare("SELECT COUNT(*) as total FROM invoice WHERE id_user = '$user_id' AND (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') $querywhere");
+        $countStmt = $pdo->prepare("SELECT COUNT(*) as total FROM invoice WHERE id_user = :user_id AND (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') $querywhere");
+        if (isset($params[':username_like'])) {
+            $countStmt->bindValue(':username_like', $params[':username_like'], PDO::PARAM_STR);
+        }
+        $countStmt->bindValue(':user_id', $params[':user_id'], PDO::PARAM_INT);
         $countStmt->execute();
         $totalItems = $countStmt->fetchColumn();
         $totalPages = ceil($totalItems / $limit);
@@ -110,6 +144,9 @@ switch ($data['actions']) {
         $stmt->bindValue(':user_id', $user_id, PDO::PARAM_INT);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        if (isset($params[':username_like'])) {
+            $stmt->bindValue(':username_like', $params[':username_like'], PDO::PARAM_STR);
+        }
         $stmt->execute();
         $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $datauser = [];

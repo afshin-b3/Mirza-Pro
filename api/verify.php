@@ -49,8 +49,16 @@ function datevalid($data_unsafe)
     }
 }
 
-$data = json_decode(file_get_contents("php://input"),true);
-if(!isset($data)){
+$rawInput = file_get_contents("php://input");
+$dataDecoded = json_decode($rawInput, true);
+
+if (is_array($dataDecoded) && isset($dataDecoded['data']) && is_string($dataDecoded['data'])) {
+    $data = $dataDecoded['data'];
+} elseif (is_string($dataDecoded)) {
+    $data = $dataDecoded;
+} elseif (is_string($rawInput) && $rawInput !== '') {
+    $data = $rawInput;
+} else {
     echo json_encode(array(
         'status' => false,
         'msg' => "data invalid",
@@ -58,6 +66,7 @@ if(!isset($data)){
         ));
         return;
 }
-$data = htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+
+$data = htmlspecialchars((string) $data, ENT_QUOTES, 'UTF-8');
 $datavalid = datevalid($data);
 echo $datavalid;

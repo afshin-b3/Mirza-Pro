@@ -10,6 +10,10 @@ ini_set('error_log', 'error_log');
 
 $headrs = getallheaders();
 $setting = select("setting", "*");
+$data = json_decode(file_get_contents("php://input"), true);
+if (!is_array($data)) {
+    $data = array();
+}
 if(!isset($headrs['Token']) or $APIKEY != $headrs['Token']){
     http_response_code(403);
     echo json_encode(array(
