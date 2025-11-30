@@ -14,4 +14,16 @@ $domainhosts = '{domain_name}';
 $usernamebot = '{username_bot}';
 
 $new_marzban = true;
+
+// Application-wide pepper and subscription token secret.
+// Replace the placeholder values with strong random strings in production.
+if (!defined('APP_PEPPER')) {
+    define('APP_PEPPER', getenv('APP_PEPPER') ?: 'change_this_pepper_to_random_value');
+}
+if (!defined('SUB_TOKEN_SECRET')) {
+    define('SUB_TOKEN_SECRET', getenv('SUB_TOKEN_SECRET') ?: 'change_this_sub_token_secret');
+}
+if (!defined('SUB_TOKEN_TTL')) {
+    define('SUB_TOKEN_TTL', 86400); // 24 hours
+}
 ?>

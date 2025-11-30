@@ -95,7 +95,7 @@ class ManagePanel
                     $data_Output['links'] = explode("\n", $data_Output['links']);
                 }
                 if ($inoice != false) {
-                    $data_Output['subscription_url'] = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                    $data_Output['subscription_url'] = buildSubscriptionUrl($inoice['id_invoice'], $inoice['id_user'], $domainhosts);
                 }
                 $Output['status'] = 'successful';
                 $Output['username'] = $data_Output['username'];
@@ -136,7 +136,7 @@ class ManagePanel
                 $links_user = explode("\n", trim($data_Output['links']));
                 $date = new DateTime($data_Output['expire']);
                 if ($inoice != false) {
-                    $data_Output['subscription_url'] = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                    $data_Output['subscription_url'] = buildSubscriptionUrl($inoice['id_invoice'], $inoice['id_user'], $domainhosts);
                 }
                 $data_Output['expire'] = $date->getTimestamp();
                 $Output['status'] = 'successful';
@@ -178,7 +178,7 @@ class ManagePanel
                     $Output['subscription_url'] = $Get_Data_Panel['linksubx'] . "/{$subId}";
                     $Output['configs'] = $links_user;
                     if ($inoice != false) {
-                        $Output['subscription_url'] = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                        $Output['subscription_url'] = buildSubscriptionUrl($inoice['id_invoice'], $inoice['id_user'], $domainhosts);
                     }
                 }
             }
@@ -212,7 +212,7 @@ class ManagePanel
                     $Output['subscription_url'] = $Get_Data_Panel['linksubx'] . "/{$subId}";
                     $Output['configs'] = [outputlunk($Output['subscription_url'])];
                     if ($inoice != false) {
-                        $Output['subscription_url'] = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                        $Output['subscription_url'] = buildSubscriptionUrl($inoice['id_invoice'], $inoice['id_user'], $domainhosts);
                     }
                 }
             }
@@ -256,7 +256,7 @@ class ManagePanel
                 $Output['subscription_url'] = "{$Get_Data_Panel['linksubx']}/{$data_Output['uuid']}/";
                 $Output['configs'] = [];
                 if ($inoice != false) {
-                    $Output['subscription_url'] = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                    $Output['subscription_url'] = buildSubscriptionUrl($inoice['id_invoice'], $inoice['id_user'], $domainhosts);
                 }
             }
         } elseif ($Get_Data_Panel['type'] == "Manualsale") {
@@ -443,7 +443,7 @@ class ManagePanel
                     $UsernameData['expire'] = $UsernameData['expire'];
                 }
                 if ($inoice != false) {
-                    $UsernameData['subscription_url'] = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                    $UsernameData['subscription_url'] = buildSubscriptionUrl($inoice['id_invoice'], $inoice['id_user'], $domainhosts);
                 }
                 if ($new_marzban) {
                     $UsernameData['proxies'] = isset($UsernameData['proxy_settings']) ? $UsernameData['proxy_settings'] : null;
@@ -518,7 +518,7 @@ class ManagePanel
                         $expiretime = 0;
                     }
                     if ($inoice != false) {
-                        $UsernameData['subscription_url'] = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                        $UsernameData['subscription_url'] = buildSubscriptionUrl($inoice['id_invoice'], $inoice['id_user'], $domainhosts);
                     }
                     $Output = array(
                         'status' => $UsernameData['status'],
@@ -587,7 +587,7 @@ class ManagePanel
                 $links_user = base64_decode($links_user);
             $links_user = explode("\n", trim($links_user));
             if ($inoice != false)
-                $linksub = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                $linksub = buildSubscriptionUrl($inoice['id_invoice'], $inoice['id_user'], $domainhosts);
             $user_data['lastOnline'] = $user_data['lastOnline'] == 0 ? "offline" : (new DateTime('@' . ($user_data['lastOnline'] / 1000)))->format('Y-m-d H:i:s');
             $Output = array(
                 'status' => $user_data['enable'],
@@ -643,7 +643,7 @@ class ManagePanel
                     $status = "active";
                 }
                 if ($inoice != false) {
-                    $linksuburl = "https://$domainhosts/sub/" . $inoice['id_invoice'];
+                    $linksuburl = buildSubscriptionUrl($inoice['id_invoice'], $inoice['id_user'], $domainhosts);
                 }
                 $Output = array(
                     'status' => $status,

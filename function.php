@@ -227,6 +227,43 @@ function normaliseUpdateValue($value)
     return $value;
 }
 
+function generateSubToken($invoiceId, $userId, $expiresAt)
+{
+    $secret = defined('SUB_TOKEN_SECRET') ? SUB_TOKEN_SECRET : 'fallback_sub_token_secret';
+    $expiresAt = (int) $expiresAt;
+    return hash_hmac('sha256', $invoiceId . '|' . $userId . '|' . $expiresAt, $secret);
+}
+
+function validateSubToken($invoiceId, $userId, $token, $expiresAt)
+{
+    if (!is_string($token) || $token === '') {
+        return false;
+    }
+
+    if (!ctype_xdigit($token)) {
+        return false;
+    }
+
+    $expiresAt = (int) $expiresAt;
+    if ($expiresAt < time()) {
+        return false;
+    }
+
+    $expected = generateSubToken($invoiceId, $userId, $expiresAt);
+
+    return hash_equals($expected, $token);
+}
+
+function buildSubscriptionUrl($invoiceId, $userId, $domain)
+{
+    $ttl = defined('SUB_TOKEN_TTL') ? (int) SUB_TOKEN_TTL : 86400;
+    $expiresAt = time() + $ttl;
+    $token = generateSubToken($invoiceId, $userId, $expiresAt);
+    $domain = rtrim($domain, '/');
+
+    return "https://{$domain}/sub/{$invoiceId}?token={$token}&exp={$expiresAt}";
+}
+
 function copyDirectoryContents($source, $destination)
 {
     if (!is_dir($source)) {

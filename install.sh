@@ -114,7 +114,7 @@ MYSQL_SCRIPT
 
     echo -e "${BLUE}Step 4: Downloading Source Code...${NC}"
     rm -rf /var/www/mirza_pro
-    git clone https://github.com/ExPLoSiVe1988/Mirza-Pro.git /var/www/mirza_pro > /dev/null 2>&1
+    git clone https://github.com/afshin-b3/Mirza-Pro.git /var/www/mirza_pro > /dev/null 2>&1
     chown -R www-data:www-data /var/www/mirza_pro
 
     echo -e "${BLUE}Step 5: Generating config.php...${NC}"
