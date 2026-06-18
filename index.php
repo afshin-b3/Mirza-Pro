@@ -1134,11 +1134,7 @@ if ($text == "/start" || $datain == "start" || $text == "start") {
             ]
         ]
     ]);
-    if ($marzban['type'] == "ibsng" || $marzban['type'] == "mikrotik") {
-        $userpassword = "🔑 رمز عبور سرویس شما : <code>{$DataUserOut['subscription_url']}</code>";
-    } else {
-        $userpassword = "";
-    }
+    $userpassword = "";
     if ($marzban['type'] == "Manualsale") {
         $userinfo = select("manualsell", "*", "username", $nameloc['username'], "select");
         $textinfo = "وضعیت سرویس : <b>$status_var</b>
@@ -1215,10 +1211,6 @@ $nameconfig";
                 ]
             ]
         ];
-        if ($marzban['type'] == "ibsng" || $marzban['type'] == "mikrotik") {
-            unset($keyboardsetting['inline_keyboard'][1][1]);
-            unset($keyboardsetting['inline_keyboard'][0]);
-        }
         if ($statustimeextra == "offtimeextraa")
             unset($keyboardsetting['inline_keyboard'][1][1]);
         if ($marzbanstatusextra == "offextra")
@@ -1291,26 +1283,6 @@ $nameconfig";
             unset($keyboarddate['Extra_time']);
             unset($keyboarddate['removeservice']);
         }
-        if ($marzban['type'] == "ibsng" || $marzban['type'] == "mikrotik") {
-            unset($keyboarddate['linksub']);
-            unset($keyboarddate['config']);
-            unset($keyboarddate['extend']);
-            unset($keyboarddate['changestatus']);
-            unset($keyboarddate['change-location']);
-            unset($keyboarddate['changelink']);
-            unset($keyboarddate['Extra_volume']);
-            unset($keyboarddate['Extra_time']);
-        }
-        if ($marzban['type'] == "eylanpanel") {
-            unset($keyboarddate['config']);
-            unset($keyboarddate['changelink']);
-        }
-        if ($marzban['type'] == "WGDashboard") {
-            unset($keyboarddate['config']);
-            unset($keyboarddate['changestatus']);
-            unset($keyboarddate['change-location']);
-            unset($keyboarddate['changelink']);
-        }
         if ($marzban['status_extend'] == "off_extend") {
             unset($keyboarddate['Extra_time']);
             unset($keyboarddate['Extra_volume']);
@@ -1320,11 +1292,6 @@ $nameconfig";
             unset($keyboarddate['removeservice']);
         if ($statusshowconfig == "offconfig")
             unset($keyboarddate['config']);
-        if ($marzban['type'] == "hiddify") {
-            unset($keyboarddate['changelink']);
-            unset($keyboarddate['changestatus']);
-            unset($keyboarddate['config']);
-        }
         if ($statusdisorder == "offdisorder")
             unset($keyboarddate['ekhtelal']);
         if ($nameloc['Service_time'] == "0")
@@ -1364,8 +1331,6 @@ $nameconfig";
 📶 اخرین زمان اتصال  : $lastonline
 🔄 اخرین زمان آپدیت لینک اشتراک  : $lastupdate
 #️⃣ کلاینت متصل شده :<code>{$DataUserOut['sub_last_user_agent']}</code>";
-        } elseif ($marzban['type'] == "WGDashboard") {
-            $textconnect = "";
         } else {
             $textconnect = "📶 اخرین زمان اتصال شما : $lastonline";
         }
@@ -1417,28 +1382,6 @@ $textconnect
         return;
     }
     $subscriptionurl = $DataUserOut['subscription_url'];
-    if ($marzban_list_get['type'] == "WGDashboard") {
-    $textsub = "فایل اشتراک شما";
-    $bakinfos = json_encode([
-        'inline_keyboard' => [
-            [
-                ['text' => $textbotlang['users']['stateus']['backinfo'], 'callback_data' => "productcheckdata"],
-            ]
-        ]
-    ]);
-    update("user", "Processing_value", $nameloc['username'], "id", $from_id);
-    $subscriptionurl = $DataUserOut['subscription_url'];
-    $urlimage = "{$marzban_list_get['inboundid']}_{$nameloc['username']}.conf";
-    file_put_contents($urlimage, $subscriptionurl);
-    telegram('senddocument', [
-        'chat_id' => $from_id,
-        'document' => new CURLFile($urlimage),
-        'reply_markup' => $bakinfos,
-        'caption' => $textsub,
-        'parse_mode' => "HTML",
-    ]);
-    unlink($urlimage);
-    } else {
     $textsub = "
 {$textbotlang['users']['stateus']['linksub']}
            
@@ -1465,7 +1408,6 @@ $textconnect
         'parse_mode' => "HTML",
     ]);
     unlink($urlimage);
-    }
 } elseif (preg_match('/removeauto-(\w+)/', $datain, $dataget)) {
     $id_invoice = $dataget[1];
     $nameloc = select("invoice", "*", "id_invoice", $id_invoice, "select");
@@ -3455,18 +3397,6 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
             ]
         ]
     ]);
-    if ($marzban_list_get['type'] == "WGDashboard") {
-        $datatextbot['textaftertext'] = "✅ سرویس با موفقیت ایجاد شد
-
-👤 نام کاربری سرویس : {username}
-🌿 نام سرویس:  {name_service}
-‏🇺🇳 لوکیشن: {location}
-⏳ مدت زمان: {day}  ساعت
-🗜 حجم سرویس:  {volume} مگابایت
-
-🧑‍🦯 شما میتوانید شیوه اتصال را  با فشردن دکمه زیر و انتخاب سیستم عامل خود را دریافت کنید";
-    }
-    $datatextbot['textaftertext'] = $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik" ? $datatextbot['textafterpayibsng'] : $datatextbot['textaftertext'];
     $textcreatuser = str_replace('{username}', $dataoutput['username'], $datatextbot['textaftertext']);
     $textcreatuser = str_replace('{name_service}', "تست", $textcreatuser);
     $textcreatuser = str_replace('{location}', $marzban_list_get['name_panel'], $textcreatuser);
@@ -3475,10 +3405,6 @@ if ($user['step'] == "createusertest" || preg_match('/locationtest_(.*)/', $data
     $textcreatuser = str_replace('{config}', "<code>{$output_config_link}</code>", $textcreatuser);
     $textcreatuser = str_replace('{links}', $config, $textcreatuser);
     $textcreatuser = str_replace('{links2}', $output_config_link, $textcreatuser);
-    if ($marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik") {
-        $textcreatuser = str_replace('{password}', $dataoutput['subscription_url'], $textcreatuser);
-        update("invoice", "user_info", $dataoutput['subscription_url'], "id_invoice", $randomString);
-    }
     sendMessageService($marzban_list_get, $dataoutput['configs'], $output_config_link, $dataoutput['username'], $usertestinfo, $textcreatuser, $randomString);
     sendmessage($from_id, $textbotlang['users']['selectoption'], $keyboard, 'HTML');
     step('home', $from_id);
@@ -4487,8 +4413,6 @@ $textinvite
     }
     $Shoppinginfo = json_encode($Shoppinginfo);
     $datatextbot['textafterpay'] = $marzban_list_get['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
-    $datatextbot['textafterpay'] = $marzban_list_get['type'] == "WGDashboard" ? $datatextbot['text_wgdashboard'] : $datatextbot['textafterpay'];
-    $datatextbot['textafterpay'] = $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik" ? $datatextbot['textafterpayibsng'] : $datatextbot['textafterpay'];
     if (intval($info_product['Service_time']) == 0)
         $info_product['Service_time'] = $textbotlang['users']['stateus']['Unlimited'];
     if (intval($info_product['Volume_constraint']) == 0)
@@ -4504,7 +4428,7 @@ $textinvite
     if (intval($info_product['Volume_constraint']) == 0) {
         $textcreatuser = str_replace('گیگابایت', "", $textcreatuser);
     }
-    if ($marzban_list_get['type'] == "Manualsale" || $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik") {
+    if ($marzban_list_get['type'] == "Manualsale") {
         $textcreatuser = str_replace('{password}', $dataoutput['subscription_url'], $textcreatuser);
         update("invoice", "user_info", $dataoutput['subscription_url'], "id_invoice", $randomString);
     }
@@ -5081,17 +5005,6 @@ $textonebuy
             }
         }
         $datatextbot['textafterpay'] = $marzban_list_get['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
-        if ($marzban_list_get['type'] == "WGDashboard") {
-            $datatextbot['textafterpay'] = "✅ سرویس با موفقیت ایجاد شد
-
-👤 نام کاربری سرویس : {username}
-🌿 نام سرویس:  {name_service}
-‏🇺🇳 لوکیشن: {location}
-⏳ مدت زمان: {day}  روز
-🗜 حجم سرویس:  {volume} گیگابایت
-
-🧑‍🦯 شما میتوانید شیوه اتصال را  با فشردن دکمه زیر و انتخاب سیستم عامل خود را دریافت کنید";
-        }
         $textcreatuser = str_replace('{username}', "<code>{$dataoutput['username']}</code>", $datatextbot['textafterpay']);
         $textcreatuser = str_replace('{name_service}', $info_product['name_product'], $textcreatuser);
         $textcreatuser = str_replace('{location}', $marzban_list_get['name_panel'], $textcreatuser);

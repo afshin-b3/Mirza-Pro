@@ -200,7 +200,7 @@ switch ($data['actions']) {
             $used_Traffic = $DataUserOut['used_traffic'] / pow(1024, 3);
             $remaining_traffic = ($DataUserOut['data_limit'] - $DataUserOut['used_traffic']) / pow(1024, 3);
             $config = [];
-            if (in_array($panel['type'], ['marzban', 'marzneshin', 'alireza_single', 'x-ui_single', 'hiddify', 'eylanpanel'])) {
+            if (in_array($panel['type'], ['marzban', 'x-ui_single'])) {
                 if ($panel['sublink'] == "onsublink") {
                     $config[] = [
                         'type' => "link",
@@ -213,17 +213,6 @@ switch ($data['actions']) {
                         'value' => $DataUserOut['links']
                     ];
                 }
-            } elseif ($panel['type'] == "WGDashboard") {
-                $config[] = [
-                    'type' => "file",
-                    'value' => $DataUserOut['subscription_url'],
-                    'filename' => $panel['inboundid'] . "_" . $invoice['id_user'] . "_" . $invoice['id_invoice'] . ".config"
-                ];
-            } elseif (in_array($panel['type'], ['mikrotik', 'ibsng'])) {
-                $config[] = [
-                    'type' => "password",
-                    'value' => $DataUserOut['password']
-                ];
             }
             if ($DataUserOut['sub_updated_at']  !== null) {
                 $sub_updated = $DataUserOut['sub_updated_at'];
@@ -858,8 +847,6 @@ switch ($data['actions']) {
         }
         error_log(json_encode($datatextbotget));
         $datatextbot['textafterpay'] = $panel['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
-        $datatextbot['textafterpay'] = $panel['type'] == "WGDashboard" ? $datatextbot['text_wgdashboard'] :  $datatextbot['textafterpay'];
-        $datatextbot['textafterpay'] = $panel['type'] == "ibsng" || $panel['type'] == "mikrotik" ? $datatextbot['textafterpayibsng'] : $datatextbot['textafterpay'];
         if (intval($product['Service_time']) == 0) $product['Service_time'] = $textbotlang['users']['stateus']['Unlimited'];
         if (intval($product['Volume_constraint']) == 0) $product['Volume_constraint'] = $textbotlang['users']['stateus']['Unlimited'];
         $textcreatuser = str_replace('{username}', "<code>{$dataoutput['username']}</code>", $datatextbot['textafterpay']);

@@ -957,8 +957,6 @@ function DirectPayment($order_id, $image = 'images.jpg')
         }
         $output_config_link = $marzban_list_get['sublink'] == "onsublink" ? $dataoutput['subscription_url'] : "";
         $datatextbot['textafterpay'] = $marzban_list_get['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
-        $datatextbot['textafterpay'] = $marzban_list_get['type'] == "WGDashboard" ? $datatextbot['text_wgdashboard'] : $datatextbot['textafterpay'];
-        $datatextbot['textafterpay'] = $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik" ? $datatextbot['textafterpayibsng'] : $datatextbot['textafterpay'];
         if (intval($get_invoice['Service_time']) == 0)
             $get_invoice['Service_time'] = $textbotlang['users']['stateus']['Unlimited'];
         $textcreatuser = str_replace('{username}', $dataoutput['username'], $datatextbot['textafterpay']);
@@ -969,7 +967,7 @@ function DirectPayment($order_id, $image = 'images.jpg')
         $textcreatuser = str_replace('{config}', "<code>{$output_config_link}</code>", $textcreatuser);
         $textcreatuser = str_replace('{links}', $config, $textcreatuser);
         $textcreatuser = str_replace('{links2}', "{$output_config_link}", $textcreatuser);
-        if ($marzban_list_get['type'] == "Manualsale" || $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik") {
+        if ($marzban_list_get['type'] == "Manualsale") {
             $textcreatuser = str_replace('{password}', $dataoutput['subscription_url'], $textcreatuser);
             update("invoice", "user_info", $dataoutput['subscription_url'], "id_invoice", $get_invoice['id_invoice']);
         }
@@ -1578,27 +1576,11 @@ function addFieldToTable($tableName, $fieldName, $defaultValue = null, $datatype
 }
 function outtypepanel($typepanel, $message)
 {
-    global $from_id, $optionMarzban, $optionX_ui_single, $optionhiddfy, $optionalireza, $optionalireza_single, $optionmarzneshin, $option_mikrotik, $optionwg, $options_ui, $optioneylanpanel, $optionibsng;
+    global $from_id, $optionMarzban, $optionX_ui_single;
     if ($typepanel == "marzban") {
         sendmessage($from_id, $message, $optionMarzban, 'HTML');
     } elseif ($typepanel == "x-ui_single") {
         sendmessage($from_id, $message, $optionX_ui_single, 'HTML');
-    } elseif ($typepanel == "hiddify") {
-        sendmessage($from_id, $message, $optionhiddfy, 'HTML');
-    } elseif ($typepanel == "alireza_single") {
-        sendmessage($from_id, $message, $optionalireza_single, 'HTML');
-    } elseif ($typepanel == "marzneshin") {
-        sendmessage($from_id, $message, $optionmarzneshin, 'HTML');
-    } elseif ($typepanel == "WGDashboard") {
-        sendmessage($from_id, $message, $optionwg, 'HTML');
-    } elseif ($typepanel == "s_ui") {
-        sendmessage($from_id, $message, $options_ui, 'HTML');
-    } elseif ($typepanel == "ibsng") {
-        sendmessage($from_id, $message, $optionibsng, 'HTML');
-    } elseif ($typepanel == "mikrotik") {
-        sendmessage($from_id, $message, $option_mikrotik, 'HTML');
-    } elseif ($typepanel == "eylanpanel") {
-        sendmessage($from_id, $message, $optioneylanpanel, 'HTML');
     }
 }
 function addBackgroundImage($urlimage, $qrCodeResult, $backgroundPath)
@@ -2080,8 +2062,6 @@ function sendMessageService($panel_info, $config, $sub_link, $username_service, 
     $user_id = $user_id == null ? $from_id : $user_id;
     $STATUS_SEND_MESSAGE_PHOTO = $panel_info['config'] == "onconfig" && count($config) != 1 ? false : true;
     $out_put_qrcode = "";
-    if ($panel_info['type'] == "Manualsale" || $panel_info['type'] == "ibsng" || $panel_info['type'] == "mikrotik") {
-    }
     if ($panel_info['sublink'] == "onsublink" && $panel_info['config']) {
         $out_put_qrcode = $sub_link;
     } elseif ($panel_info['sublink'] == "onsublink") {
@@ -2090,31 +2070,18 @@ function sendMessageService($panel_info, $config, $sub_link, $username_service, 
         $out_put_qrcode = $config[0];
     }
     if ($STATUS_SEND_MESSAGE_PHOTO) {
-        if ($panel_info['type'] == "WGDashboard") {
-            $urlimage = "{$panel_info['inboundid']}_{$username_service}.conf";
-            file_put_contents($urlimage, $sub_link);
-            telegram('senddocument', [
-                'chat_id' => $user_id,
-                'document' => new CURLFile($urlimage),
-                'reply_markup' => $reply_markup,
-                'caption' => $caption,
-                'parse_mode' => "HTML",
-            ]);
-            unlink($urlimage);
-        } else {
-            $urlimage = "$user_id$invoice_id.png";
-            $qrCode = createqrcode($out_put_qrcode);
-            file_put_contents($urlimage, $qrCode->getString());
-            addBackgroundImage($urlimage, $qrCode, $image);
-            telegram('sendphoto', [
-                'chat_id' => $user_id,
-                'photo' => new CURLFile($urlimage),
-                'reply_markup' => $reply_markup,
-                'caption' => $caption,
-                'parse_mode' => "HTML",
-            ]);
-            unlink($urlimage);
-        }
+        $urlimage = "$user_id$invoice_id.png";
+        $qrCode = createqrcode($out_put_qrcode);
+        file_put_contents($urlimage, $qrCode->getString());
+        addBackgroundImage($urlimage, $qrCode, $image);
+        telegram('sendphoto', [
+            'chat_id' => $user_id,
+            'photo' => new CURLFile($urlimage),
+            'reply_markup' => $reply_markup,
+            'caption' => $caption,
+            'parse_mode' => "HTML",
+        ]);
+        unlink($urlimage);
     } else {
         sendmessage($user_id, $caption, $reply_markup, 'HTML');
     }

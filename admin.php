@@ -899,18 +899,6 @@ $paycount
     }
     savedata("save", "url_panel", $text);
     $userdata = json_decode($user['Processing_value'], true);
-    if ($userdata['type'] == "hiddify") {
-        sendmessage($from_id, $textbotlang['Admin']['managepanel']['getlimitedpanel'], $backadmin, 'HTML');
-        step('getlimitedpanel', $from_id);
-        savedata("save", "username", "null");
-        savedata("save", "password", "null");
-        return;
-    } elseif ($userdata['type'] == "s_ui" || $userdata['type'] == "WGDashboard") {
-        sendmessage($from_id, "📌 توکن را ارسال نمایید", $backadmin, 'HTML');
-        step('add_password_panel', $from_id);
-        savedata("save", "username", "null");
-        return;
-    }
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['usernameset'], $backadmin, 'HTML');
     step('add_username_panel', $from_id);
 } elseif ($user['step'] == "add_username_panel") {
@@ -925,7 +913,7 @@ $paycount
     savedata("save", "limitpanel", $text);
     $userdata = json_decode($user['Processing_value'], true);
     $randomString = bin2hex(random_bytes(2));
-    if ($userdata['type'] == "x-ui_single" || $userdata['type'] == "alireza") {
+    if ($userdata['type'] == "x-ui_single") {
         $marzbanprotocol = $randomString;
         $protocols = "vmess";
         $settingpanel = json_encode(array(
@@ -1019,34 +1007,14 @@ $paycount
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['addedpanel'], $keyboardadmin, 'HTML');
     sendmessage($from_id, "🥳", $keyboardadmin, 'HTML');
     step("home", $from_id);
-    if ($userdata['type'] == "x-ui_single" or $userdata['type'] == "alireza_single") {
+    if ($userdata['type'] == "x-ui_single") {
         sendmessage($from_id, "❌ نکته :
-برای فعالسازی پنل باید به منوی مدیریت پنل  رفته و گزینه های 
+برای فعالسازی پنل باید به منوی مدیریت پنل  رفته و گزینه های
 تنظیم شناسه اینباند و دامنه لینک ساب را حتما تنظیم نمایید در غیراینصورت کانفیگ ساخته نخواهد شد", null, 'HTML');
     } elseif ($userdata['type'] == "marzban") {
         sendmessage($from_id, "❌ نکته :
-برای فعالسازی پنل باید به منوی مدیریت پنل  رفته و گزینه های 
+برای فعالسازی پنل باید به منوی مدیریت پنل  رفته و گزینه های
 تنظیم پروتکل و اینباند را تنظیم نمایید تا ربات کانفیگ دهد در غیراینصورت کانفیگ به  کاربر داده نمی شود", null, 'HTML');
-    } elseif ($userdata['type'] == "WGDashboard") {
-        sendmessage($from_id, "❌ نکته :
-برای فعالسازی پنل باید به منوی مدیریت پنل  رفته و گزینه های 
-منوی تنظیم شناسه اینباند رفته و نام کانفیگ را تنظیم نمایید در غیراینصورت ربات هیچ کانفیگی نمیسازد", null, 'HTML');
-    } elseif ($userdata['type'] == "ibsng") {
-        sendmessage($from_id, "❌ نکته :
-برای فعالسازی باید از مدیریت پنل > تنظیم نام گروه یک نام پیشفرض گروه که در ibsng تعریف کردید در ربات بفرستید.", null, 'HTML');
-    } elseif ($userdata['type'] == "mikrotik") {
-        sendmessage($from_id, "❌ نکته :
-۱ - حتما باید پلاگین اکانتینگ در میکروتیک شما نصب باشد
-۲ - در بخش ip » servies » http or https باید فعال باشد ( اگر ssl تهیه کردید https روشن باشد در غیراینصورت http)", null, 'HTML');
-    } elseif ($userdata['type'] == "hiddify") {
-        sendmessage($from_id, "❌ نکته :
-1 - از مدیریت پنل گزینه های زیر را تنظیم کنید
-
-1 - uuid admin : uuid ادمین از پنل دریافت و ثبت کنید
-2-  دامنه لینک ساب :‌ دامنه لینک ساب پنل هیدیفای را ارسال نمایید ", null, 'HTML');
-    } elseif ($userdata['type'] == "s_ui") {
-        sendmessage($from_id, "❌ نکته :
-1 - از مسیر مدیریت پنل > تنظیم ⚙️ تنظیم پروتکل و اینباند یک نام کاربری کانفیگ را ارسال نمایید.", null, 'HTML');
     }
 }
 //_____________________[ message ]____________________________//
@@ -1807,28 +1775,6 @@ links2 : لینک ساب بدون کپی شدن
     sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
     update("textbot", "text", $text, "id_text", "textafterpay");
     step('home', $from_id);
-} elseif ($text == "متن بعد خرید ibsng" && $adminrulecheck['rule'] == "administrator") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . "<code>{$datatextbot['textafterpayibsng']}</code>", $backadmin, 'HTML');
-    sendmessage($from_id, "نام های فارسی متغییر : 
-username : نام کاربری کانفیگ 
-name_service : نام محصول
-day : زمان سرویس
-location : موقعیت سرویس
-volume : حجم سرویس
-config : لینک ساب
-links : کانفیگ بدون کپی شدن
-links2 : لینک ساب بدون کپی شدن
-
-⚠️ حتما این نام ها باید داخل آکلاد باشند ", null, 'HTML');
-    step('text_afterpaytextibsng', $from_id);
-} elseif ($user['step'] == "text_afterpaytextibsng") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "textafterpayibsng");
-    step('home', $from_id);
 } elseif ($text == "متن کارت به کارت" && $adminrulecheck['rule'] == "administrator") {
     sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . "<code>{$datatextbot['text_cart']}</code>", $backadmin, 'HTML');
     sendmessage($from_id, "نام های فارسی متغییر : 
@@ -1925,25 +1871,6 @@ config : اطلاعات سرویس
     }
     sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
     update("textbot", "text", $text, "id_text", "textmanual");
-    step('home', $from_id);
-} elseif ($text == "متن بعد گرفتن اکانت WGDashboard" && $adminrulecheck['rule'] == "administrator") {
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . "<code>{$datatextbot['text_wgdashboard']}</code>", $backadmin, 'HTML');
-    sendmessage($from_id, "نام های فارسی متغییر : 
-username : نام کاربری کانفیگ 
-name_service : نام محصول
-day : زمان سرویس
-location : موقعیت سرویس
-volume : حجم سرویس
-
-⚠️ حتما این نام ها باید داخل آکلاد باشند ", null, 'HTML');
-    step('text_wgdashboard', $from_id);
-} elseif ($user['step'] == "text_wgdashboard") {
-    if (!$text) {
-        sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ErrorText'], $textbot, 'HTML');
-        return;
-    }
-    sendmessage($from_id, $textbotlang['Admin']['ManageUser']['SaveText'], $textbot, 'HTML');
-    update("textbot", "text", $text, "id_text", "text_wgdashboard");
     step('home', $from_id);
 } elseif ($text == "دکمه تمدید" && $adminrulecheck['rule'] == "administrator") {
     sendmessage($from_id, $textbotlang['Admin']['ManageUser']['ChangeTextGet'] . "<code>{$datatextbot['text_extend']}</code>", $backadmin, 'HTML');
@@ -3347,7 +3274,7 @@ $caption";
     savedata("save", "price_product", $text);
     $userdata = json_decode($user['Processing_value'], true);
     $panel = select("marzban_panel", "*", "name_panel", $userdata['Location'], "select");
-    if ($panel['type'] == "marzban" || $panel['type'] == "marzneshin") {
+    if ($panel['type'] == "marzban") {
         sendmessage($from_id, $textbotlang['Admin']['Product']['gettimereset'], $keyboardtimereset, 'HTML');
         step('getnote', $from_id);
         return;
@@ -4361,141 +4288,8 @@ $text_expie_agent
             $text_marzban = $textbotlang['Admin']['managepanel']['errorstateuspanel'] . "علت خطا {$x_ui_check_connect['errror']}";
             sendmessage($from_id, $text_marzban, $optionX_ui_single, 'HTML');
         }
-    } elseif ($marzban_list_get['type'] == "alireza_single") {
-        $x_ui_check_connect = login($marzban_list_get['code_panel'], false);
-        if ($x_ui_check_connect['success']) {
-            sendmessage($from_id, $textbotlang['Admin']['managepanel']['connectx-ui'], $optionalireza_single, 'HTML');
-        } elseif ($x_ui_check_connect['msg'] == "The username or password is incorrect") {
-            $text_marzban = "❌ نام کاربری یا رمز عبور پنل اشتباه است";
-            sendmessage($from_id, $text_marzban, $optionalireza_single, 'HTML');
-        } else {
-            $text_marzban = $textbotlang['Admin']['managepanel']['errorstateuspanel'] . "علت خطا {$x_ui_check_connect['errror']}";
-            sendmessage($from_id, $text_marzban, $optionalireza_single, 'HTML');
-        }
-    } elseif ($marzban_list_get['type'] == "hiddify") {
-        $System_Stats = serverstatus($marzban_list_get['name_panel']);
-        if (!empty($System_Stats['status']) && $System_Stats['status'] != 200) {
-            $text_marzban = "❌ خطایی در دریافت اطلاعات رخ داده است کد خطا : " . $System_Stats['status'];
-            sendmessage($from_id, $text_marzban, $optionhiddfy, 'HTML');
-        } elseif (!empty($System_Stats['error'])) {
-            $text_marzban = "❌ خطایی در دریافت اطلاعات رخ داده است  خطا : " . $System_Stats['error'];
-            sendmessage($from_id, $text_marzban, $optionhiddfy, 'HTML');
-        } else {
-            $System_Stats = json_decode($System_Stats['body'], true);
-            if (isset($System_Stats['stats'])) {
-                $mem_total = round($System_Stats['stats']['system']['ram_total'], 2);
-                $mem_used = round($System_Stats['stats']['system']['ram_used'], 2);
-                $bandwidth = formatBytes($System_Stats['outgoing_bandwidth'] + $System_Stats['incoming_bandwidth']);
-                $text_marzban = "
-آمار پنل شما👇:
-                             
-🖥 وضعیت اتصال پنل : ✅ پنل متصل است
-💻 رم  کل سرور  : $mem_total
-💻 مصرف رم پنل   : $mem_used
-گروه کاربری :{$marzban_list_get['agent']}
-⭕️ برای مدیریت پنل یکی از گزینه های زیر را انتخاب کنید";
-                sendmessage($from_id, $text_marzban, $optionhiddfy, 'HTML');
-            } elseif (isset($System_Stats['message']) && $System_Stats['message'] == "Unathorized") {
-                $text_marzban = "❌  لینک پنل اشتباه ارسال شده است";
-                sendmessage($from_id, $text_marzban, $optionhiddfy, 'HTML');
-            } else {
-                sendmessage($from_id, "پنل متصل نیست", $optionhiddfy, 'HTML');
-            }
-        }
     } elseif ($marzban_list_get['type'] == "Manualsale") {
         sendmessage($from_id, "یک گزینه را انتخاب نمایید", $optionManualsale, 'HTML');
-    } elseif ($marzban_list_get['type'] == "marzneshin") {
-        $Check_token = token_panelm($marzban_list_get['code_panel']);
-        if (isset($Check_token['access_token'])) {
-            $System_Stats = Get_System_Statsm($text);
-            if (!empty($System_Stats['status']) && $System_Stats['status'] != 200) {
-                $text_marzban = "❌ خطایی در دریافت اطلاعات رخ داده است کد خطا : " . $System_Stats['status'];
-                sendmessage($from_id, $text_marzban, $optionMarzban, 'HTML');
-                return;
-            } elseif (!empty($System_Stats['error'])) {
-                $text_marzban = "❌ خطایی در دریافت اطلاعات رخ داده است  خطا : " . $System_Stats['error'];
-                sendmessage($from_id, $text_marzban, $optionMarzban, 'HTML');
-                return;
-            }
-            $System_Stats = json_decode($System_Stats['body'], true);
-            $active_users = $System_Stats['active'];
-            $total_user = $System_Stats['total'];
-            $ListSell = number_format(mysqli_fetch_assoc(mysqli_query($connect, "SELECT COUNT(*) FROM invoice WHERE (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') AND Service_location = '{$marzban_list_get['name_panel']}' AND name_product != 'سرویس تست'"))['COUNT(*)'] ?? 0);
-            $ListSellSUM = number_format(mysqli_fetch_assoc(mysqli_query($connect, "SELECT SUM(price_product) FROM invoice WHERE (status = 'active' OR status = 'end_of_time'  OR status = 'end_of_volume' OR status = 'sendedwarn' OR Status = 'send_on_hold') AND Service_location = '{$marzban_list_get['name_panel']}' AND name_product != 'سرویس تست'"))['SUM(price_product)'] ?? 0);
-            $Condition_marzban = "";
-            $text_marzban = "
-آمار پنل شما👇:
-                             
-🖥 وضعیت اتصال پنل مرزبان: ✅ پنل متصل است
-👥  تعداد کل کاربران: $total_user
-👤 تعداد کاربران فعال: $active_users
-🛍 تعداد فروش کل در این پنل : $ListSell
-🛍 جمع فروش کل در این پنل : $ListSellSUM تومان
-گروه کاربری :{$marzban_list_get['agent']}
-        
-⭕️ برای مدیریت پنل یکی از گزینه های زیر را انتخاب کنید";
-            sendmessage($from_id, $text_marzban, $optionmarzneshin, 'HTML');
-        } elseif (isset($Check_token['detail']) && $Check_token['detail'] == "Incorrect username or password") {
-            $text_marzban = "❌ نام کاربری یا رمز عبور پنل اشتباه است";
-            sendmessage($from_id, $text_marzban, $optionMarzban, 'HTML');
-        } else {
-            $text_marzban = $textbotlang['Admin']['managepanel']['errorstateuspanel'] . json_encode($Check_token);
-            sendmessage($from_id, $text_marzban, $optionMarzban, 'HTML');
-        }
-    } elseif ($marzban_list_get['type'] == "WGDashboard") {
-        sendmessage($from_id, $textbotlang['users']['selectoption'], $optionwg, 'HTML');
-    } elseif ($marzban_list_get['type'] == "s_ui") {
-        sendmessage($from_id, $textbotlang['users']['selectoption'], $options_ui, 'HTML');
-    } elseif ($marzban_list_get['type'] == "ibsng") {
-        $result = loginIBsng($marzban_list_get['url_panel'], $marzban_list_get['username_panel'], $marzban_list_get['password_panel']);
-        if ($result) {
-            sendmessage($from_id, $result['msg'], $optionibsng, 'HTML');
-        } else {
-            sendmessage($from_id, $result['msg'], $optionibsng, 'HTML');
-        }
-    } elseif ($marzban_list_get['type'] == "mikrotik") {
-        $result = login_mikrotik($marzban_list_get['url_panel'], $marzban_list_get['username_panel'], $marzban_list_get['password_panel']);
-        if (isset($result['error'])) {
-            sendmessage($from_id, json_encode($result), $option_mikrotik, 'HTML');
-        } else {
-            $free_hdd_space = round($result['free-hdd-space'] / pow(1024, 3), 2);
-            $free_memory = round($result['free-memory'] / pow(1024, 3), 2);
-            $total_hdd_space = round($result['total-hdd-space'] / pow(1024, 3), 2);
-            $total_memory = round($result['total-memory'] / pow(1024, 3), 2);
-            sendmessage($from_id, "<b>📡 اطلاعات سیستم MikroTik شما:</b>
-
-<blockquote>
-🖥 <b>پلتفرم:</b> {$result['platform']}  
-🏷 <b>نسخه:</b> {$result['version']}  
-🕰 <b>مدت زمان روشن بودن:</b> {$result['uptime']}  
-</blockquote>
-
-<blockquote>
-💽 <b>نام معماری:</b> {$result['architecture-name']}  
-📋 <b>مدل برد:</b> {$result['board-name']}  
-🏗 <b>زمان ساخت سیستم:</b> {$result['build-time']}  
-</blockquote>
-
-<blockquote>
-⚙️ <b>پردازنده:</b> {$result['cpu']}  
-🔢 <b>تعداد هسته‌ها:</b> {$result['cpu-count']}  
-🚀 <b>فرکانس CPU:</b> {$result['cpu-frequency']}  
-📊 <b>میزان بار CPU:</b> {$result['cpu-load']} %
-</blockquote>
-
-<blockquote>
-💾 <b>فضای کل هارد:</b> $total_hdd_space گیگ  
-📂 <b>فضای آزاد هارد:</b> $free_hdd_space گیگ  
-🧠 <b>حافظه کل رم:</b> $total_memory گیگ  
-📉 <b>حافظه آزاد رم:</b> $free_memory گیگ
-</blockquote>
-
-<blockquote>
-📝 <b>سکتورهای نوشته‌شده از زمان ریبوت:</b> {$result['write-sect-since-reboot']}  
-🧮 <b>مجموع سکتورهای نوشته‌شده:</b> {$result['write-sect-total']}
-</blockquote>
-", $option_mikrotik, 'HTML');
-        }
     } else {
         sendmessage($from_id, "یک گزینه را انتخاب نمایید", $optionMarzban, 'HTML');
     }
@@ -4617,9 +4411,7 @@ $text_expie_agent
     update("marzban_panel", "val_usertest", $text, "name_panel", $user['Processing_value']);
     step('home', $from_id);
 } elseif ($text == "💎 تنظیم شناسه اینباند" && $adminrulecheck['rule'] == "administrator") {
-    sendmessage($from_id, "📌 شناسه اینباندی که می خواهید کانفیگ ازآن ساخته شود راارسال نمایید.  شناسه اینباند یک عدد چند رقمی است که در پنل  در صفحه اینباند ها ستون id  نوشته شده است
-
-⚠️ در صورتی که پنل wgdashboard هستید باید نام کانفیگ را ارسال نمایید", $backadmin, 'HTML');
+    sendmessage($from_id, "📌 شناسه اینباندی که می خواهید کانفیگ ازآن ساخته شود راارسال نمایید.  شناسه اینباند یک عدد چند رقمی است که در پنل  در صفحه اینباند ها ستون id  نوشته شده است", $backadmin, 'HTML');
     step('getinboundiid', $from_id);
 } elseif ($user['step'] == "getinboundiid") {
     sendmessage($from_id, "✅ شناسه اینباند با موفقیت ذخیره گردید", $optionX_ui_single, 'HTML');
@@ -5763,11 +5555,6 @@ $iduser  در ربات  رفع مسدود گردید
 } elseif ($text == "/end") {
     $userdata = json_decode($user['Processing_value'], true);
     $panel = select("marzban_panel", "*", "name_panel", $userdata['name_panel'], "select");
-    if ($panel['type'] == "marzneshin") {
-        update("user", "Processing_value", $userdata['name_panel'], "id", $from_id);
-        sendmessage($from_id, $textbotlang['Admin']['managepanel']['Inbound']['endInbound'], $optionmarzneshin, 'HTML');
-        return;
-    }
     sendmessage($from_id, $textbotlang['Admin']['managepanel']['Inbound']['endInbound'], $optionMarzban, 'HTML');
     step('home', $from_id);
     return;
@@ -7132,8 +6919,6 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
         ]
     ]);
     $datatextbot['textafterpay'] = $marzban_list_get['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
-    $datatextbot['textafterpay'] = $marzban_list_get['type'] == "WGDashboard" ? $datatextbot['text_wgdashboard'] : $datatextbot['textafterpay'];
-    $datatextbot['textafterpay'] = $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik" ? $datatextbot['textafterpayibsng'] : $datatextbot['textafterpay'];
     if (intval($info_product['Service_time']) == 0)
         $info_product['Service_time'] = $textbotlang['users']['stateus']['Unlimited'];
     if (intval($info_product['Volume_constraint']) == 0)
@@ -7149,7 +6934,7 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
     if (intval($info_product['Volume_constraint']) == 0) {
         $textcreatuser = str_replace('گیگابایت', "", $textcreatuser);
     }
-    if ($marzban_list_get['type'] == "Manualsale" || $marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik") {
+    if ($marzban_list_get['type'] == "Manualsale") {
         $textcreatuser = str_replace('{password}', $DataUserOut['subscription_url'], $textcreatuser);
         update("invoice", "user_info", $DataUserOut['subscription_url'], "id_invoice", $randomString);
     }
@@ -7635,8 +7420,6 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
             }
         }
         $datatextbot['textafterpay'] = $panel['type'] == "Manualsale" ? $datatextbot['textmanual'] : $datatextbot['textafterpay'];
-        $datatextbot['textafterpay'] = $panel['type'] == "WGDashboard" ? $datatextbot['text_wgdashboard'] : $datatextbot['textafterpay'];
-        $datatextbot['textafterpay'] = $panel['type'] == "ibsng" || $panel['type'] == "mikrotik" ? $datatextbot['textafterpayibsng'] : $datatextbot['textafterpay'];
         if (intval($text) == 0)
             $text = $textbotlang['users']['stateus']['Unlimited'];
         $textcreatuser = str_replace('{username}', "<code>{$dataoutput['username']}</code>", $datatextbot['textafterpay']);
@@ -7647,7 +7430,7 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
         $textcreatuser = str_replace('{config}', $output_config_link, $textcreatuser);
         $textcreatuser = str_replace('{links}', $config, $textcreatuser);
         $textcreatuser = str_replace('{links2}', $output_config_link, $textcreatuser);
-        if ($panel['type'] == "Manualsale" || $panel['type'] == "ibsng" || $panel['type'] == "mikrotik") {
+        if ($panel['type'] == "Manualsale") {
             $textcreatuser = str_replace('{password}', $dataoutput['subscription_url'], $textcreatuser);
             update("invoice", "user_info", $dataoutput['subscription_url'], "id_invoice", $randomString);
         }
@@ -7686,16 +7469,6 @@ if ($datain == "settimecornremove" && $adminrulecheck['rule'] == "administrator"
     if ($typepanel == "marzban") {
         sendmessage($from_id, $textbotlang['users']['selectoption'], $optionathmarzban, 'HTML');
     } elseif ($typepanel == "x-ui_single") {
-        sendmessage($from_id, $textbotlang['users']['selectoption'], $optionathx_ui, 'HTML');
-    } elseif ($typepanel == "hiddify") {
-        sendmessage($from_id, $textbotlang['users']['selectoption'], $optionathx_ui, 'HTML');
-    } elseif ($typepanel == "alireza") {
-        sendmessage($from_id, $textbotlang['users']['selectoption'], $optionathx_ui, 'HTML');
-    } elseif ($typepanel == "alireza_single") {
-        sendmessage($from_id, $textbotlang['users']['selectoption'], $optionathx_ui, 'HTML');
-    } elseif ($typepanel == "marzneshin") {
-        sendmessage($from_id, $textbotlang['users']['selectoption'], $optionathx_ui, 'HTML');
-    } elseif ($typepanel == "WGDashboard") {
         sendmessage($from_id, $textbotlang['users']['selectoption'], $optionathx_ui, 'HTML');
     }
     step("home", $from_id);
@@ -9048,19 +8821,6 @@ f,n.n2", $backadmin, 'HTML');
     $stmt->execute();
     sendmessage($from_id, "📌 بخش مورد نظر حذف گردید.", $supportcenter, 'HTML');
     step("home", $from_id);
-} elseif ($text == "⚙️ تنظیمات سرویس" && $adminrulecheck['rule'] == "administrator") {
-    $textsetservice = "📌 برای تنظیم سرویس یک کانفیگ در پنل خود ساخته و  سرویس هایی که میخواهید فعال باشند. را داخل پنل فعال کرده و نام کاربری کانفیگ را ارسال نمایید";
-    sendmessage($from_id, $textsetservice, $backadmin, 'HTML');
-    step('getservceid', $from_id);
-} elseif ($user['step'] == "getservceid") {
-    $userdata = json_decode(getuserm($text, $user['Processing_value'])['body'], true);
-    if (isset($userdata['detail']) and $userdata['detail'] == "User not found") {
-        sendmessage($from_id, "کاربر در پنل وجود ندارد", null, 'HTML');
-        return;
-    }
-    update("marzban_panel", "proxies", json_encode($userdata['service_ids']), "name_panel", $user['Processing_value']);
-    step("home", $from_id);
-    sendmessage($from_id, "✅ اطلاعات با موفقیت تنظیم گردید", $optionmarzneshin, 'HTML');
 } elseif ($text == "👤 تنظیم آیدی پشتیبانی" && $adminrulecheck['rule'] == "administrator") {
     $textcart = "📌 نام کاربری خود را بدون @ برای پشتیبانی  ارسال کنید\n\n{$setting['id_support']}";
     sendmessage($from_id, $textcart, $backadmin, 'HTML');
@@ -9593,28 +9353,8 @@ f,n.n2", $backadmin, 'HTML');
             update("marzban_panel", "inbounds", json_encode($DataUserOut['inbounds']), "name_panel", $user['Processing_value']);
             update("marzban_panel", "proxies", json_encode($DataUserOut['proxies'], true), "name_panel", $user['Processing_value']);
         }
-    } elseif ($panel['type'] == "s_ui") {
-        $data = GetClientsS_UI($text, $panel['name_panel']); {
-            if (count($data) == 0) {
-                sendmessage($from_id, "❌ یوزر در پنل وجود ندارد.", $options_ui, 'HTML');
-                return;
-            }
-            $servies = [];
-            foreach ($data['inbounds'] as $service) {
-                $servies[] = $service;
-            }
-            update("marzban_panel", "proxies", json_encode($servies, true), "name_panel", $user['Processing_value']);
-        }
-    } elseif ($panel['type'] == "ibsng" || $panel['type'] == "mikrotik") {
-        update("marzban_panel", "proxies", $text, "name_panel", $user['Processing_value']);
     }
-    if ($panel['type'] == "ibsng") {
-        sendmessage($from_id, "✅ نام گروه با موفقیت تنظیم گردید.", $optionibsng, 'HTML');
-    } elseif ($panel['type'] == "mikrotik") {
-        sendmessage($from_id, "✅ نام گروه با موفقیت تنظیم گردید.", $option_mikrotik, 'HTML');
-    } else {
-        sendmessage($from_id, "✅ اینباند و پروتکل های شما با موفقیت تنظیم گردیدند.", $optionMarzban, 'HTML');
-    }
+    sendmessage($from_id, "✅ اینباند و پروتکل های شما با موفقیت تنظیم گردیدند.", $optionMarzban, 'HTML');
     step("home", $from_id);
 } elseif ($text == "🔋 وضعیت تمدید" && $adminrulecheck['rule'] == "administrator") {
     $marzbanstatus = select("marzban_panel", "*", "name_panel", $user['Processing_value'], "select");
@@ -9905,27 +9645,7 @@ elseif ($text == "🫣 مخفی کردن پنل برای یک کاربر" && $ad
         $stmt->bindParam(':agent', $user['Processing_value_tow']);
         $stmt->execute();
         $datainbound = json_encode($DataUserOut['inbounds']);
-    } elseif ($marzban_list_get['type'] == "marzneshin") {
-        $userdata = json_decode(getuserm($text, $marzban_list_get['name_panel'])['body'], true);
-        if (isset($userdata['detail']) and $userdata['detail'] == "User not found") {
-            sendmessage($from_id, "کاربر در پنل وجود ندارد", null, 'HTML');
-            return;
-        }
-        $datainbound = json_encode($userdata['service_ids'], true);
-    } elseif ($marzban_list_get['type'] == "x-ui_single" || $marzban_list_get['type'] == "alireza_single") {
-        $datainbound = $text;
-    } elseif ($marzban_list_get['type'] == "s_ui") {
-        $data = GetClientsS_UI($text, $panel['name_panel']);
-        if (count($data) == 0) {
-            sendmessage($from_id, "❌ یوزر در پنل وجود ندارد.", $options_ui, 'HTML');
-            return;
-        }
-        $servies = [];
-        foreach ($data['inbounds'] as $service) {
-            $servies[] = $service;
-        }
-        $datainbound = json_encode($servies);
-    } elseif ($marzban_list_get['type'] == "ibsng" || $marzban_list_get['type'] == "mikrotik") {
+    } elseif ($marzban_list_get['type'] == "x-ui_single") {
         $datainbound = $text;
     } else {
         sendmessage($from_id, "❌ برای این پنل قابلیت تعریف اینباند وجود ندارد", $shopkeyboard, 'HTML');
@@ -10711,19 +10431,19 @@ if ($datain == "settimecornday" && $adminrulecheck['rule'] == "administrator") {
             ]
         ]
     ];
-    if (!in_array($panel['type'], ['Manualsale', "WGDashboard", 'hiddify'])) {
+    if (!in_array($panel['type'], ['Manualsale'])) {
         $Bot_Status['inline_keyboard'][] = [
             ['text' => $statusconfig, 'callback_data' => "editpanel-stautsconfig-{$panel['config']}-{$panel['code_panel']}"],
             ['text' => "⚙️ ارسال کانفیگ", 'callback_data' => "none"],
         ];
     }
-    if (!in_array($panel['type'], ['Manualsale', "WGDashboard", 'hiddify'])) {
+    if (!in_array($panel['type'], ['Manualsale'])) {
         $Bot_Status['inline_keyboard'][] = [
             ['text' => $statussublink, 'callback_data' => "editpanel-sublink-{$panel['sublink']}-{$panel['code_panel']}"],
             ['text' => "⚙️ ارسال لینک اشتراک", 'callback_data' => "none"],
         ];
     }
-    if (in_array($panel['type'], ['marzban', "x-ui_single", "marzneshin"])) {
+    if (in_array($panel['type'], ['marzban', "x-ui_single"])) {
         $Bot_Status['inline_keyboard'][] = [
             ['text' => $statusconnecton, 'callback_data' => "editpanel-connecton-{$panel['conecton']}-{$panel['code_panel']}"],
             ['text' => "📊 اولین اتصال", 'callback_data' => "none"],
@@ -10733,7 +10453,7 @@ if ($datain == "settimecornday" && $adminrulecheck['rule'] == "administrator") {
             ['text' => "📊 اولین اتصال اکانت تست", 'callback_data' => "none"],
         ];
     }
-    if (!in_array($panel['type'], ["Manualsale", "WGDashboard"])) {
+    if (!in_array($panel['type'], ["Manualsale"])) {
         $Bot_Status['inline_keyboard'][] = [
             ['text' => $changeloc, 'callback_data' => "editpanel-changeloc-{$panel['changeloc']}-{$panel['code_panel']}"],
             ['text' => "🌍 تغییر لوکیشن", 'callback_data' => "none"],
@@ -10748,16 +10468,6 @@ if ($datain == "settimecornday" && $adminrulecheck['rule'] == "administrator") {
             ['text' => $inbocunddisable, 'callback_data' => "editpanel-inbocunddisable-{$panel['inboundstatus']}-{$panel['code_panel']}"],
             ['text' => "📍 اکانت غیرفعال", 'callback_data' => "none"],
         ];
-    }
-    if ($panel['type'] == "ibsng" || $panel['type'] == "mikrotik") {
-        unset($Bot_Status['inline_keyboard'][2]);
-        unset($Bot_Status['inline_keyboard'][3]);
-        unset($Bot_Status['inline_keyboard'][4]);
-        unset($Bot_Status['inline_keyboard'][5]);
-        unset($Bot_Status['inline_keyboard'][6]);
-        unset($Bot_Status['inline_keyboard'][7]);
-        unset($Bot_Status['inline_keyboard'][8]);
-        unset($Bot_Status['inline_keyboard'][9]);
     }
     $Bot_Status['inline_keyboard'] = array_values($Bot_Status['inline_keyboard']);
     $Bot_Status = json_encode($Bot_Status);
@@ -10949,19 +10659,19 @@ if ($datain == "settimecornday" && $adminrulecheck['rule'] == "administrator") {
             ]
         ]
     ];
-    if (!in_array($panel['type'], ['Manualsale', "WGDashboard", 'hiddify'])) {
+    if (!in_array($panel['type'], ['Manualsale'])) {
         $Bot_Status['inline_keyboard'][] = [
             ['text' => $statusconfig, 'callback_data' => "editpanel-stautsconfig-{$panel['config']}-{$panel['code_panel']}"],
             ['text' => "⚙️ ارسال کانفیگ", 'callback_data' => "none"],
         ];
     }
-    if (!in_array($panel['type'], ['Manualsale', "WGDashboard", 'hiddify'])) {
+    if (!in_array($panel['type'], ['Manualsale'])) {
         $Bot_Status['inline_keyboard'][] = [
             ['text' => $statussublink, 'callback_data' => "editpanel-sublink-{$panel['sublink']}-{$panel['code_panel']}"],
             ['text' => "⚙️ ارسال لینک اشتراک", 'callback_data' => "none"],
         ];
     }
-    if (in_array($panel['type'], ['marzban', "x-ui_single", "marzneshin"])) {
+    if (in_array($panel['type'], ['marzban', "x-ui_single"])) {
         $Bot_Status['inline_keyboard'][] = [
             ['text' => $statusconnecton, 'callback_data' => "editpanel-connecton-{$panel['conecton']}-{$panel['code_panel']}"],
             ['text' => "📊 اولین اتصال", 'callback_data' => "none"],
@@ -10971,7 +10681,7 @@ if ($datain == "settimecornday" && $adminrulecheck['rule'] == "administrator") {
             ['text' => "📊 اولین اتصال اکانت تست", 'callback_data' => "none"],
         ];
     }
-    if (!in_array($panel['type'], ["Manualsale", "WGDashboard"])) {
+    if (!in_array($panel['type'], ["Manualsale"])) {
         $Bot_Status['inline_keyboard'][] = [
             ['text' => $changeloc, 'callback_data' => "editpanel-changeloc-{$panel['changeloc']}-{$panel['code_panel']}"],
             ['text' => "🌍 تغییر لوکیشن", 'callback_data' => "none"],
