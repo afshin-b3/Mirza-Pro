@@ -21,7 +21,7 @@
 این ریپازیتوری شامل پروژه اوپن‌سورس **ربات میرزا پرو** است که همراه با یک اسکریپت قدرتمند برای نصب و مدیریت خودکار ارائه شده است.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ExPLoSiVe1988/Mirza-Pro/main/Banner.jpg" alt="بنر ربات میرزا پرو" width="600"/>
+  <img src="https://raw.githubusercontent.com/afshin-b3/Mirza-Pro/main/Banner.jpg" alt="بنر ربات میرزا پرو" width="600"/>
 </p>
 
 ## 🎉 پروژه نسخه پرو، اوپن‌سورس شد!
@@ -45,7 +45,7 @@
 برای نصب ربات با استفاده از اسکریپت مدیریت، دستور زیر را به عنوان کاربر root اجرا کنید:
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/ExPLoSiVe1988/Mirza-Pro/main/install.sh)
+bash <(curl -s https://raw.githubusercontent.com/afshin-b3/Mirza-Pro/main/install.sh)
 ```
 
 **گزینه‌های منو:**
